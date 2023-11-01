@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Lorem ipsum dolor sit amet.</title>
+  <link href="https://example.com/"/>
+  <updated>2021-02-24T09:08:10Z</updated>
+  <author>
+    <name>Jane Doe</name>
+  </author>
+  <id>urn:uuid:ba9192e8-9e34-4c23-8445-94b67ba316ee</id>
+  <entry>
+    <title>Lorem ipsum dolor sit.</title>
+    <link href="http://example.com/2021/02/24/hello"/>
+    <id>urn:uuid:425ba23c-d283-4580-8a3c-3b67aaa6b373</id>
+    <updated>2021-02-24T09:08:10Z</updated>
+    <summary>Lorem ipsum dolor sit amet, consectetur adipiscing.</summary>
+  </entry>
+</feed>

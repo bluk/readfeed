@@ -1,0 +1,31 @@
+[package]
+authors = ["Bryant Luk <code@bryantluk.com>"]
+categories = ["parser-implementations", "parsing", "text-processing", "no-std"]
+description = "Feed parsing utilities"
+documentation = "https://docs.rs/readfeed"
+edition = "2021"
+include = [
+  "src/**/*.rs",
+  "Cargo.toml",
+  "CHANGELOG.md",
+  "README.md",
+  "LICENSE-APACHE",
+  "LICENSE-MIT",
+]
+keywords = ["feed", "parser", "parsing", "atom", "rss"]
+license = "MIT OR Apache-2.0"
+name = "readfeed"
+readme = "README.md"
+repository = "https://github.com/bluk/readfeed"
+rust-version = "1.71.0"
+version = "0.1.0"
+
+[features]
+default = ["std"]
+
+std = ["maybe_xml/std"]
+
+alloc = ["maybe_xml/alloc"]
+
+[dependencies]
+maybe_xml = { version = "0.10.0", default-features = false }
