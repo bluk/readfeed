@@ -551,4 +551,75 @@ mod tests {
         assert_eq!(None, opml_iter.next());
         assert_eq!(None, iter.next());
     }
+
+    #[allow(clippy::too_many_lines)]
+    #[test]
+    fn eval_opml_nested_outline_tags() {
+        let input = r#"
+<opml>
+    <body>
+        <outline text="1">
+            <outline text="2">
+                <outline text="3">
+                </outline>
+                <outline text="4">
+                </outline>
+            </outline>
+            <outline text="5">
+            </outline>
+        </outline>
+    </body>
+</opml>
+        "#;
+
+        let mut iter = Iter::new(input);
+
+        let Some(Elem::Opml(mut opml_iter)) = iter.next() else {
+            panic!();
+        };
+
+        let Some(OpmlElem::Body(mut body_iter)) = opml_iter.next() else {
+            panic!();
+        };
+
+        if let Some(BodyElem::Outline(mut outline_1_iter)) = body_iter.next() {
+            assert_eq!(Some("1"), outline_1_iter.text().map(|v| v.as_str()));
+
+            if let Some(OutlineElem::Outline(mut outline_2_iter)) = outline_1_iter.next() {
+                assert_eq!(Some("2"), outline_2_iter.text().map(|v| v.as_str()));
+                if let Some(OutlineElem::Outline(mut outline_3_iter)) = outline_2_iter.next() {
+                    assert_eq!(Some("3"), outline_3_iter.text().map(|v| v.as_str()));
+                    assert_eq!(None, outline_3_iter.next());
+                } else {
+                    panic!();
+                }
+                if let Some(OutlineElem::Outline(mut outline_4_iter)) = outline_2_iter.next() {
+                    assert_eq!(Some("4"), outline_4_iter.text().map(|v| v.as_str()));
+                    assert_eq!(None, outline_4_iter.next());
+                } else {
+                    panic!();
+                }
+
+                assert_eq!(None, outline_2_iter.next());
+            } else {
+                panic!();
+            }
+
+            if let Some(OutlineElem::Outline(mut outline_5_iter)) = outline_1_iter.next() {
+                assert_eq!(Some("5"), outline_5_iter.text().map(|v| v.as_str()));
+                assert_eq!(None, outline_5_iter.next());
+            } else {
+                panic!();
+            }
+
+            assert_eq!(None, outline_1_iter.next());
+        } else {
+            panic!();
+        }
+
+        assert_eq!(None, body_iter.next());
+
+        assert_eq!(None, opml_iter.next());
+        assert_eq!(None, iter.next());
+    }
 }

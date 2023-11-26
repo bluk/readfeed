@@ -59,16 +59,24 @@ pub(crate) fn read_until_end_tag<'a>(
     pos: &mut usize,
 ) -> usize {
     let mut end = *pos;
+    let mut start_count = 1;
 
     while let Some(token) = reader.tokenize(pos) {
         match token.ty() {
             token::Ty::EndTag(tag) => {
                 if tag.name().as_str().trim().eq_ignore_ascii_case(local_name) {
-                    break;
+                    start_count -= 1;
+                    if start_count == 0 {
+                        break;
+                    }
                 }
             }
-            token::Ty::StartTag(_)
-            | token::Ty::EmptyElementTag(_)
+            token::Ty::StartTag(tag) => {
+                if tag.name().as_str().trim().eq_ignore_ascii_case(local_name) {
+                    start_count += 1;
+                }
+            }
+            token::Ty::EmptyElementTag(_)
             | token::Ty::Characters(_)
             | token::Ty::ProcessingInstruction(_)
             | token::Ty::Declaration(_)
