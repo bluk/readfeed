@@ -2,6 +2,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 
 const ATOM_1: &str = include_str!("../../readfeed/tests/resources/atom-1.xml");
 const HTML_1: &str = include_str!("../../readfeed/tests/resources/html-1.html");
+const OPML_1: &str = include_str!("../../readfeed/tests/resources/opml-1.xml");
 const RSS_1: &str = include_str!("../../readfeed/tests/resources/rss-1.xml");
 
 fn atom_iter(input: &str) -> u64 {
@@ -73,6 +74,41 @@ fn html_iter(input: &str) -> u64 {
                 count += 1;
             }
             Elem::BaseUrl(_) => {}
+        }
+    }
+
+    count
+}
+
+fn opml_iter(input: &str) -> u64 {
+    use readfeed::opml::{BodyElem, Elem, Iter, OpmlElem};
+
+    let mut count = 0;
+
+    let mut iter = Iter::new(input);
+
+    let Some(Elem::Raw(_)) = iter.next() else {
+        unreachable!();
+    };
+
+    let Some(Elem::Opml(mut opml_iter)) = iter.next() else {
+        unreachable!();
+    };
+
+    let Some(OpmlElem::Head(_)) = opml_iter.next() else {
+        unreachable!();
+    };
+
+    let Some(OpmlElem::Body(body_iter)) = opml_iter.next() else {
+        unreachable!();
+    };
+
+    for elem in body_iter {
+        match elem {
+            BodyElem::Outline(_) => {
+                count += 1;
+            }
+            BodyElem::Unknown(_) | BodyElem::Raw(_) => {}
         }
     }
 
@@ -154,6 +190,12 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("html_iter", |b| {
         b.iter(|| {
             let count = html_iter(HTML_1);
+            assert_eq!(2, count);
+        });
+    });
+    c.bench_function("opml_iter", |b| {
+        b.iter(|| {
+            let count = opml_iter(OPML_1);
             assert_eq!(2, count);
         });
     });

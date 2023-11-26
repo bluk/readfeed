@@ -194,6 +194,7 @@ pub fn detect_type(input: &str) -> Ty {
 
 pub mod atom;
 pub mod html;
+pub mod opml;
 pub mod rss;
 pub mod xml;
 
