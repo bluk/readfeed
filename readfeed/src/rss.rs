@@ -146,30 +146,20 @@ macro_rules! impl_iter {
                 while let Some(token) = self.reader.tokenize(&mut self.pos) {
                     match token.ty() {
                         token::Ty::StartTag(tag) => {
-                            let name = tag.name();
-                            let local_name = name.local().as_str();
-                            let namespace = name.namespace_prefix().map(|ns| ns.as_str());
+                            let tag_name = tag.name();
 
                             let content = xml::collect_bytes_until_end_tag(
-                                namespace,
-                                local_name,
+                                tag_name,
                                 &self.reader,
                                 &mut self.pos,
                             );
 
-                            return Some($fn_name(Tag::Start(tag), namespace, local_name, content));
+                            return Some($fn_name(Tag::Start(tag), tag_name, content));
                         }
                         token::Ty::EmptyElementTag(tag) => {
-                            let name = tag.name();
-                            let local_name = name.local().as_str();
-                            let namespace = name.namespace_prefix().map(|ns| ns.as_str());
+                            let tag_name = tag.name();
 
-                            return Some($fn_name(
-                                Tag::EmptyElement(tag),
-                                namespace,
-                                local_name,
-                                "",
-                            ));
+                            return Some($fn_name(Tag::EmptyElement(tag), tag_name, ""));
                         }
                         token::Ty::Characters(content) => {
                             if content.content().as_str().trim().is_empty() {
@@ -343,12 +333,9 @@ pub enum Elem<'a> {
 }
 
 impl<'a> ImageElem<'a> {
-    fn new(
-        tag: Tag<'a>,
-        _namespace: Option<&'a str>,
-        local_name: &'a str,
-        content: &'a str,
-    ) -> ImageElem<'a> {
+    fn new(tag: Tag<'a>, tag_name: TagName<'a>, content: &'a str) -> ImageElem<'a> {
+        let local_name = tag_name.local().as_str();
+
         macro_rules! return_content {
             ($local_name: literal, $inner_ty: ident, $elem_ty: expr) => {
                 if local_name.eq_ignore_ascii_case($local_name) {
@@ -369,12 +356,9 @@ impl<'a> ImageElem<'a> {
 }
 
 impl<'a> ItemElem<'a> {
-    fn new(
-        tag: Tag<'a>,
-        _namespace: Option<&'a str>,
-        local_name: &'a str,
-        content: &'a str,
-    ) -> ItemElem<'a> {
+    fn new(tag: Tag<'a>, tag_name: TagName<'a>, content: &'a str) -> ItemElem<'a> {
+        let local_name = tag_name.local().as_str();
+
         macro_rules! return_content {
             ($local_name: literal, $inner_ty: ident, $elem_ty: expr) => {
                 if local_name.eq_ignore_ascii_case($local_name) {
@@ -400,12 +384,9 @@ impl<'a> ItemElem<'a> {
 }
 
 impl<'a> SkipHoursElem<'a> {
-    fn new(
-        tag: Tag<'a>,
-        _namespace: Option<&'a str>,
-        local_name: &'a str,
-        content: &'a str,
-    ) -> SkipHoursElem<'a> {
+    fn new(tag: Tag<'a>, tag_name: TagName<'a>, content: &'a str) -> SkipHoursElem<'a> {
+        let local_name = tag_name.local().as_str();
+
         macro_rules! return_content {
             ($local_name: literal, $inner_ty: ident, $elem_ty: expr) => {
                 if local_name.eq_ignore_ascii_case($local_name) {
@@ -421,12 +402,9 @@ impl<'a> SkipHoursElem<'a> {
 }
 
 impl<'a> SkipDaysElem<'a> {
-    fn new(
-        tag: Tag<'a>,
-        _namespace: Option<&'a str>,
-        local_name: &'a str,
-        content: &'a str,
-    ) -> SkipDaysElem<'a> {
+    fn new(tag: Tag<'a>, tag_name: TagName<'a>, content: &'a str) -> SkipDaysElem<'a> {
+        let local_name = tag_name.local().as_str();
+
         macro_rules! return_content {
             ($local_name: literal, $inner_ty: ident, $elem_ty: expr) => {
                 if local_name.eq_ignore_ascii_case($local_name) {
@@ -442,12 +420,9 @@ impl<'a> SkipDaysElem<'a> {
 }
 
 impl<'a> ChannelElem<'a> {
-    fn new(
-        tag: Tag<'a>,
-        _namespace: Option<&'a str>,
-        local_name: &'a str,
-        content: &'a str,
-    ) -> ChannelElem<'a> {
+    fn new(tag: Tag<'a>, tag_name: TagName<'a>, content: &'a str) -> ChannelElem<'a> {
+        let local_name = tag_name.local().as_str();
+
         macro_rules! return_content {
             ($local_name: literal, $inner_ty: ident, $elem_ty: expr) => {
                 if local_name.eq_ignore_ascii_case($local_name) {
@@ -503,12 +478,9 @@ impl<'a> ChannelElem<'a> {
 }
 
 impl<'a> RssElem<'a> {
-    fn new(
-        tag: Tag<'a>,
-        _namespace: Option<&'a str>,
-        local_name: &'a str,
-        content: &'a str,
-    ) -> RssElem<'a> {
+    fn new(tag: Tag<'a>, tag_name: TagName<'a>, content: &'a str) -> RssElem<'a> {
+        let local_name = tag_name.local().as_str();
+
         macro_rules! return_iter {
             ($local_name: literal, $inner_ty: ident, $elem_ty: expr) => {
                 if local_name.eq_ignore_ascii_case($local_name) {
@@ -528,12 +500,9 @@ impl<'a> RssElem<'a> {
 }
 
 impl<'a> Elem<'a> {
-    fn new(
-        tag: Tag<'a>,
-        _namespace: Option<&'a str>,
-        local_name: &'a str,
-        content: &'a str,
-    ) -> Elem<'a> {
+    fn new(tag: Tag<'a>, tag_name: TagName<'a>, content: &'a str) -> Elem<'a> {
+        let local_name = tag_name.local().as_str();
+
         macro_rules! return_iter {
             ($local_name: literal, $inner_ty: ident, $elem_ty: expr) => {
                 if local_name.eq_ignore_ascii_case($local_name) {

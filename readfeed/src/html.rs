@@ -16,7 +16,7 @@ pub enum Elem<'a> {
 
 #[must_use]
 fn is_link_tag_name(name: TagName<'_>) -> bool {
-    name.as_str().trim().eq_ignore_ascii_case("link")
+    name.as_str().eq_ignore_ascii_case("link")
 }
 
 fn eval_link_tag_attributes<'a>(attributes: Attributes<'a>) -> Option<&'a str> {
@@ -25,7 +25,7 @@ fn eval_link_tag_attributes<'a>(attributes: Attributes<'a>) -> Option<&'a str> {
     let mut ty: Option<&'a str> = None;
 
     for attr in attributes {
-        let name = attr.name().as_str().trim();
+        let name = attr.name().as_str();
 
         if name.eq_ignore_ascii_case("href") {
             if let Some(val) = attr.value() {
@@ -64,12 +64,12 @@ fn eval_link_tag_attributes<'a>(attributes: Attributes<'a>) -> Option<&'a str> {
 
 #[must_use]
 fn is_base_tag_name(name: TagName<'_>) -> bool {
-    name.as_str().trim().eq_ignore_ascii_case("base")
+    name.as_str().eq_ignore_ascii_case("base")
 }
 
 fn eval_base_tag_attributes(attributes: Attributes<'_>) -> Option<&str> {
     attributes.into_iter().find_map(|attr| {
-        if attr.name().as_str().trim().eq_ignore_ascii_case("href") {
+        if attr.name().as_str().eq_ignore_ascii_case("href") {
             return attr.value().map(|val| val.as_str());
         }
         None

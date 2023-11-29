@@ -7,9 +7,9 @@ use crate::Ty;
 
 fn map_tag_name_to_ty(tag_name: TagName<'_>) -> Ty {
     let local_name = tag_name.local().as_str();
-    if local_name.trim().eq_ignore_ascii_case("rss") {
+    if local_name.eq_ignore_ascii_case("rss") {
         Ty::Rss
-    } else if local_name.trim().eq_ignore_ascii_case("feed") {
+    } else if local_name.eq_ignore_ascii_case("feed") {
         Ty::Atom
     } else {
         Ty::XmlOrHtml
@@ -53,18 +53,18 @@ pub(super) fn find_ty(input: &str) -> Ty {
 
 #[must_use]
 pub(crate) fn read_until_end_tag<'a>(
-    _namespace: Option<&'a str>,
-    local_name: &'a str,
+    tag_name: TagName<'a>,
     reader: &Reader<'a>,
     pos: &mut usize,
 ) -> usize {
     let mut end = *pos;
     let mut start_count = 1;
+    let tag_name = tag_name.as_str();
 
     while let Some(token) = reader.tokenize(pos) {
         match token.ty() {
             token::Ty::EndTag(tag) => {
-                if tag.name().as_str().trim().eq_ignore_ascii_case(local_name) {
+                if tag.name().as_str().eq_ignore_ascii_case(tag_name) {
                     start_count -= 1;
                     if start_count == 0 {
                         break;
@@ -72,7 +72,7 @@ pub(crate) fn read_until_end_tag<'a>(
                 }
             }
             token::Ty::StartTag(tag) => {
-                if tag.name().as_str().trim().eq_ignore_ascii_case(local_name) {
+                if tag.name().as_str().eq_ignore_ascii_case(tag_name) {
                     start_count += 1;
                 }
             }
@@ -92,14 +92,14 @@ pub(crate) fn read_until_end_tag<'a>(
 
 #[must_use]
 pub(crate) fn collect_bytes_until_end_tag<'a>(
-    namespace: Option<&'a str>,
-    local_name: &'a str,
+    tag_name: TagName<'a>,
     reader: &Reader<'a>,
     pos: &mut usize,
 ) -> &'a str {
     let begin = *pos;
+    let end = read_until_end_tag(tag_name, reader, pos);
+
     let input = reader.into_inner();
-    let end = read_until_end_tag(namespace, local_name, reader, pos);
     &input[begin..end]
 }
 
