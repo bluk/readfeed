@@ -163,7 +163,7 @@
 )]
 
 use maybe_xml::token::{
-    prop::{AttributeValue, Attributes},
+    prop::{AttributeValue, Attributes, TagName},
     EmptyElementTag, StartTag,
 };
 
@@ -205,6 +205,15 @@ enum Tag<'a> {
 }
 
 impl<'a> Tag<'a> {
+    #[inline]
+    #[must_use]
+    const fn tag_name(&self) -> TagName<'a> {
+        match self {
+            Tag::Start(tag) => tag.name(),
+            Tag::EmptyElement(tag) => tag.name(),
+        }
+    }
+
     #[inline]
     #[must_use]
     const fn attributes(&self) -> Option<Attributes<'a>> {

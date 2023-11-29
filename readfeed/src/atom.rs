@@ -95,7 +95,7 @@
 use maybe_xml::{
     token::{
         self,
-        prop::{AttributeValue, Attributes},
+        prop::{AttributeValue, Attributes, TagName},
         Token,
     },
     Reader,
@@ -257,6 +257,14 @@ macro_rules! impl_iter {
 }
 
 content_elem!(Unknown);
+
+impl<'a> Unknown<'a> {
+    #[inline]
+    #[must_use]
+    pub fn tag_name(&self) -> TagName<'a> {
+        self.tag.tag_name()
+    }
+}
 
 content_elem!(Link);
 impl_attr!(Link, href, "href");
