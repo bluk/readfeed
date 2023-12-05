@@ -4,9 +4,9 @@ version = 3
 
 [[package]]
 name = "maybe_xml"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b7e463d496665d818b5b205e6b121ee650ec67f4fea634fceb6cf47f8b80186"
+checksum = "3ac6876e8b8af984fbb4479a78280a9b2c5254b582d1461ad0bbf8b756073631"
 
 [[package]]
 name = "readfeed"
