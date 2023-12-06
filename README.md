@@ -10,16 +10,16 @@ formats such as [RSS][rss] and [Atom][atom].
 ### RSS
 
 ```rust
-use readfeed::rss::{self, Elem, ItemElem};
+use readfeed::rss::{self, ChannelElem, Elem, ItemElem, RssElem};
 
 let input = "
 <rss>
     <channel>
-        <title>Channel Title</title> 
+        <title>Channel Title</title>
         <item>
-            <title>Item Title 1</title> 
-            <link>https://example.com/1</link> 
-            <description>Item Description 1</description> 
+            <title>Item Title 1</title>
+            <link>https://example.com/1</link>
+            <description>Item Description 1</description>
         </item>
     </channel>
 </rss>
@@ -27,43 +27,52 @@ let input = "
 
 let mut iter = rss::Iter::new(input);
 
-if let Some(Elem::Title(title)) = iter.next() {
-    assert_eq!(Some("Channel Title"), title.content());
+let Some(Elem::Rss(mut rss_iter)) = iter.next() else {
+    panic!();
+};
+
+let Some(RssElem::Channel(mut channel_iter)) = rss_iter.next() else {
+    panic!();
+};
+
+if let Some(ChannelElem::Title(title)) = channel_iter.next() {
+    assert_eq!("Channel Title", title.content());
 } else {
     panic!();
 }
 
-if let Some(Elem::Item(mut item_iter)) = iter.next() {
-    if let Some(ItemElem::Title(title)) = item_iter.next() {
-        assert_eq!(Some("Item Title 1"), title.content());
-    } else {
-        panic!();
-    }
-    if let Some(ItemElem::Link(link)) = item_iter.next() {
-        assert_eq!(Some("https://example.com/1"), link.content());
-    } else {
-        panic!();
-    }
-    if let Some(ItemElem::Description(desc)) = item_iter.next() {
-        assert_eq!(Some("Item Description 1"), desc.content());
-    } else {
-        panic!();
-    }
-    assert_eq!(None, item_iter.next());
+let Some(ChannelElem::Item(mut item_iter)) = channel_iter.next() else {
+    panic!();
+};
+
+if let Some(ItemElem::Title(title)) = item_iter.next() {
+    assert_eq!("Item Title 1", title.content());
 } else {
     panic!();
 }
+if let Some(ItemElem::Link(link)) = item_iter.next() {
+    assert_eq!("https://example.com/1", link.content());
+} else {
+    panic!();
+}
+if let Some(ItemElem::Description(desc)) = item_iter.next() {
+    assert_eq!("Item Description 1", desc.content());
+} else {
+    panic!();
+}
+assert_eq!(None, item_iter.next());
 
+assert_eq!(None, channel_iter.next());
+assert_eq!(None, rss_iter.next());
 assert_eq!(None, iter.next());
 ```
 
 ### Atom
 
 ```rust
-use readfeed::atom::{self, Elem, EntryElem};
+use readfeed::atom::{self, Elem, EntryElem, FeedElem};
 
 let input = r#"
-<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Lorem ipsum dolor sit amet.</title>
     <link href="https://example.com/"/>
@@ -81,33 +90,37 @@ let input = r#"
 
 let mut iter = atom::Iter::new(input);
 
-if let Some(Elem::Title(title)) = iter.next() {
-    assert_eq!(Some("Lorem ipsum dolor sit amet."), title.content());
+let Some(Elem::Feed(mut feed_iter)) = iter.next() else {
+    panic!();
+};
+
+if let Some(FeedElem::Title(title)) = feed_iter.next() {
+    assert_eq!("Lorem ipsum dolor sit amet.", title.content());
 } else {
     panic!();
 }
 
-if let Some(Elem::Link(link)) = iter.next() {
+if let Some(FeedElem::Link(link)) = feed_iter.next() {
     assert_eq!(Some("https://example.com/"), link.href().map(|v| v.as_str()));
 } else {
     panic!();
 }
 
-if let Some(Elem::Updated(updated)) = iter.next() {
-    assert_eq!(Some("2021-02-24T09:08:10Z"), updated.content());
+if let Some(FeedElem::Updated(updated)) = feed_iter.next() {
+    assert_eq!("2021-02-24T09:08:10Z", updated.content());
 } else {
     panic!();
 }
 
-if let Some(Elem::Id(id)) = iter.next() {
-    assert_eq!(Some("urn:uuid:ba9192e8-9e34-4c23-8445-94b67ba316ee"), id.content());
+if let Some(FeedElem::Id(id)) = feed_iter.next() {
+    assert_eq!("urn:uuid:ba9192e8-9e34-4c23-8445-94b67ba316ee", id.content());
 } else {
     panic!();
 }
 
-if let Some(Elem::Entry(mut entry_iter)) = iter.next() {
+if let Some(FeedElem::Entry(mut entry_iter)) = feed_iter.next() {
     if let Some(EntryElem::Title(title)) = entry_iter.next() {
-        assert_eq!(Some("Lorem ipsum dolor sit."), title.content());
+        assert_eq!("Lorem ipsum dolor sit.", title.content());
     } else {
         panic!();
     }
@@ -117,17 +130,17 @@ if let Some(Elem::Entry(mut entry_iter)) = iter.next() {
         panic!();
     }
     if let Some(EntryElem::Id(id)) = entry_iter.next() {
-        assert_eq!(Some("urn:uuid:425ba23c-d283-4580-8a3c-3b67aaa6b373"), id.content());
+        assert_eq!("urn:uuid:425ba23c-d283-4580-8a3c-3b67aaa6b373", id.content());
     } else {
         panic!();
     }
     if let Some(EntryElem::Updated(updated)) = entry_iter.next() {
-        assert_eq!(Some("2021-02-24T09:08:10Z"), updated.content());
+        assert_eq!("2021-02-24T09:08:10Z", updated.content());
     } else {
         panic!();
     }
     if let Some(EntryElem::Summary(summary)) = entry_iter.next() {
-        assert_eq!(Some("Lorem ipsum dolor sit amet, consectetur adipiscing."), summary.content());
+        assert_eq!("Lorem ipsum dolor sit amet, consectetur adipiscing.", summary.content());
     } else {
         panic!();
     }
@@ -136,6 +149,7 @@ if let Some(Elem::Entry(mut entry_iter)) = iter.next() {
     panic!();
 }
 
+assert_eq!(None, feed_iter.next());
 assert_eq!(None, iter.next());
 ```
 
