@@ -1,5 +1,13 @@
 # CHANGELOG
 
+### [Unreleased]
+
+## [0.2.0] - 2023-12-18
+
+### Added
+
+* Update `maybe_xml` dependency to version `0.11.0.`
+
 ## [0.1.3] - 2023-11-29
 
 ### Added
@@ -29,7 +37,8 @@
 
 * Initial implementation.
 
-[Unreleased]: https://github.com/bluk/readfeed/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/bluk/readfeed/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/bluk/readfeed/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/bluk/readfeed/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/bluk/readfeed/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/bluk/readfeed/compare/v0.1.0...v0.1.1
