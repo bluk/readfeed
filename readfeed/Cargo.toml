@@ -28,4 +28,4 @@ std = ["maybe_xml/std"]
 alloc = ["maybe_xml/alloc"]
 
 [dependencies]
-maybe_xml = { version = "0.10.1", default-features = false }
+maybe_xml = { version = "0.11.0", default-features = false }
