@@ -1,7 +1,10 @@
 //! Provides types to represent elements in an [XML][xml] document.
 //!
 //! [xml]: https://www.w3.org/TR/2006/REC-xml11-20060816/
-use maybe_xml::{token::prop::TagName, Reader};
+use maybe_xml::{
+    token::{self, prop::TagName},
+    Reader,
+};
 
 use crate::Ty;
 
@@ -20,19 +23,17 @@ pub(super) fn find_ty(input: &str) -> Ty {
     Reader::from_str(input)
         .into_iter()
         .find_map(|token| match token.ty() {
-            maybe_xml::token::Ty::StartTag(start_tag) => Some(map_tag_name_to_ty(start_tag.name())),
-            maybe_xml::token::Ty::EmptyElementTag(empty_tag) => {
-                Some(map_tag_name_to_ty(empty_tag.name()))
-            }
-            maybe_xml::token::Ty::EndTag(_) => Some(Ty::XmlOrHtml),
-            maybe_xml::token::Ty::Characters(chars) => {
+            token::Ty::StartTag(start_tag) => Some(map_tag_name_to_ty(start_tag.name())),
+            token::Ty::EmptyElementTag(empty_tag) => Some(map_tag_name_to_ty(empty_tag.name())),
+            token::Ty::EndTag(_) => Some(Ty::XmlOrHtml),
+            token::Ty::Characters(chars) => {
                 if chars.as_str().chars().all(|c| c.is_ascii_whitespace()) {
                     return None;
                 }
 
                 Some(Ty::XmlOrHtml)
             }
-            maybe_xml::token::Ty::Cdata(cdata) => {
+            token::Ty::Cdata(cdata) => {
                 if cdata
                     .content()
                     .as_str()
@@ -44,9 +45,9 @@ pub(super) fn find_ty(input: &str) -> Ty {
 
                 Some(Ty::XmlOrHtml)
             }
-            maybe_xml::token::Ty::ProcessingInstruction(_)
-            | maybe_xml::token::Ty::Declaration(_)
-            | maybe_xml::token::Ty::Comment(_) => None,
+            token::Ty::ProcessingInstruction(_)
+            | token::Ty::Declaration(_)
+            | token::Ty::Comment(_) => None,
         })
         .unwrap_or(Ty::Unknown)
 }
@@ -102,5 +103,3 @@ pub(crate) fn collect_bytes_until_end_tag<'a>(
     let input = reader.into_inner();
     &input[begin..end]
 }
-
-pub use maybe_xml::token;
