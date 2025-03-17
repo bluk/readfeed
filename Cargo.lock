@@ -10,7 +10,7 @@ checksum = "ff9a34090d672832f38a557fbcf606d3a42a519a12b1c956f3ceacc7b8d7141b"
 
 [[package]]
 name = "readfeed"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "maybe_xml",
 ]

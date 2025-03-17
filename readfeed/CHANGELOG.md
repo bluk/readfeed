@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.2.2](https://github.com/bluk/readfeed/compare/v0.2.1...v0.2.2) - 2025-03-17
+
+### Fixed
+
+- re-export maybe_xml::token module in xml module
+
 ## [0.2.1](https://github.com/bluk/readfeed/compare/v0.2.0...v0.2.1) - 2025-03-16
 
 ### Other
