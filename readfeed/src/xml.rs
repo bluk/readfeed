@@ -1,12 +1,11 @@
 //! Provides types to represent elements in an [XML][xml] document.
 //!
 //! [xml]: https://www.w3.org/TR/2006/REC-xml11-20060816/
-use maybe_xml::{
-    token::{self, prop::TagName},
-    Reader,
-};
+use maybe_xml::{token::prop::TagName, Reader};
 
 use crate::Ty;
+
+pub use maybe_xml::token;
 
 fn map_tag_name_to_ty(tag_name: TagName<'_>) -> Ty {
     let local_name = tag_name.local().as_str();
